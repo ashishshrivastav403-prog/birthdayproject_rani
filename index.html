@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Rani 💖</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffd1e8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: #fff0f7;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .hidden { display: none; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .box {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #ff69b4;
+            border-radius: 12px;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.1s, background 0.3s;
+        }
+        .box:active { transform: scale(0.9); }
+        button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #ff1493;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 20, 147, 0.3);
+        }
+        img, video {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        #p4 p {
+            line-height: 1.6;
+            color: #444;
+            text-align: left;
+        }
+        .signature {
+            text-align: right !important;
+            margin-top: 25px;
+            color: #ff1493;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div id="p1">
+        <h2 style="color:#ff1493; margin-bottom: 5px;">Match the Emojis 💕</h2>
+        <p style="font-size: 14px; color: #888;">Solve this to see your surprise!</p>
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <div id="p2" class="hidden">
+        <img id="slide" src="images/1.jpg" alt="Memories">
+        <p style="color:#ff69b4; margin-top:15px; font-weight: bold;">For You... 🎵</p>
+        <button id="nextBtn" class="hidden" onclick="goVideo()">Next Step ✨</button>
+        <audio id="song" src="birthday.mp3"></audio>
+    </div>
+
+    <div id="p3" class="hidden">
+        <video id="vid" controls>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+        <button onclick="goMessage()">Final Message ❤️</button>
+    </div>
+
+    <div id="p4" class="hidden">
+        <p>
+            और अब जब तुमने ये वीडियो देख लिया है, मैं बस इतना ही कहना चाहता हूँ:<br><br>
+            <b style="color:#ff1493; font-size: 1.1em;">तुम्हारी हर मुस्कान मेरे लिए बहुत मायने रखती है।</b><br><br>
+            This is just a small reminder that you are cherished and loved – <br>
+            यह बस एक छोटा सा याद दिलाने वाला इशारा है कि तुम कितनी ख़ास हो और तुम्हें कितना प्यार किया जाता है।<br><br>
+            <b>तुम्हारा दिन बहुत ही खास तरीके से मनाओ।</b>
+        </p>
+        <p class="signature">Ashish Kumar Shrivastav</p>
+    </div>
+
+</div>
+
+<audio id="ok" src="success.mp3"></audio>
+<audio id="bad" src="wrong.mp3"></audio>
+
+<script>
+    const p1 = document.getElementById("p1");
+    const p2 = document.getElementById("p2");
+    const p3 = document.getElementById("p3");
+    const p4 = document.getElementById("p4");
+    const song = document.getElementById("song");
+    const okSound = document.getElementById("ok");
+    const badSound = document.getElementById("bad");
+
+    const emojis = ["💖","💖","😍","😍","😘","😘","🥰","🥰"];
+    emojis.sort(() => 0.5 - Math.random());
+
+    let first = null, lock = false, done = 0;
+    const grid = document.getElementById("grid");
+
+    // Initialize Game
+    emojis.forEach(e => {
+        const b = document.createElement("div");
+        b.className = "box";
+        b.dataset.e = e;
+        b.onclick = () => clickBox(b);
+        grid.appendChild(b);
+    });
+
+    function playSound(sound) {
+        sound.currentTime = 0; 
+        sound.play().catch(() => {});
+    }
+
+    function clickBox(b) {
+        if (lock || b.textContent || b.style.background === "rgb(255, 209, 232)") return;
+        
+        b.textContent = b.dataset.e;
+        
+        if (!first) {
+            first = b;
+        } else {
+            if (first.dataset.e === b.dataset.e) {
+                playSound(okSound);
+                first.style.background = "#ffd1e8";
+                b.style.background = "#ffd1e8";
+                done += 2;
+                first = null;
+                
+                if (done === 8) {
+                    setTimeout(() => {
+                        p1.classList.add("hidden");
+                        p2.classList.remove("hidden");
+                        startSlide();
+                    }, 800);
+                }
+            } else {
+                playSound(badSound);
+                lock = true;
+                setTimeout(() => {
+                    first.textContent = "";
+                    b.textContent = "";
+                    first = null;
+                    lock = false;
+                }, 700);
+            }
+        }
+    }
+
+    let imgIndex = 1;
+    function startSlide() {
+        song.play().catch(e => console.log("Interaction needed for audio"));
+        
+        // Image Slideshow Logic
+        const timer = setInterval(() => {
+            imgIndex++;
+            if (imgIndex <= 6) {
+                document.getElementById("slide").src = `images/${imgIndex}.jpg`;
+            } else {
+                clearInterval(timer);
+            }
+        }, 3000);
+
+        // Show button after song ends
+        song.onended = () => {
+            document.getElementById("nextBtn").classList.remove("hidden");
+        };
+
+        // Safety backup: show button after 25s if song fails/is too long
+        setTimeout(() => {
+            document.getElementById("nextBtn").classList.remove("hidden");
+        }, 25000);
+    }
+
+    function goVideo() {
+        song.pause();
+        p2.classList.add("hidden");
+        p3.classList.remove("hidden");
+        document.getElementById("vid").play();
+    }
+
+    function goMessage() {
+        p3.classList.add("hidden");
+        p4.classList.remove("hidden");
+    }
+</script>
+
+</body>
+</html>
